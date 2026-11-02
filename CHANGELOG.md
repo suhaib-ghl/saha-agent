@@ -18,6 +18,8 @@ First portable source release under the MIT license.
 
 ### Fixed
 
+- Loopback startup no longer depends on reverse DNS; local CLI credentials are never routed through environment HTTP proxies.
+
 - Task continuation no longer exhausts attempts accumulated before an owner answer.
 - Tool approval no longer masquerades as a model question that restarts a worker.
 - Stale leases cannot commit success or permanently block unrelated queued jobs.

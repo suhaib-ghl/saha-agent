@@ -67,7 +67,9 @@ def request(root, config, route, body=None):
     req = urllib.request.Request(f"http://127.0.0.1:{config['port']}{route}",
                                  data=json.dumps(body).encode() if body is not None else None,
                                  headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'})
-    with urllib.request.urlopen(req, timeout=10) as response:
+    # Owner credentials are for this machine, never an environment HTTP proxy.
+    local = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    with local.open(req, timeout=10) as response:
         return json.load(response)
 
 

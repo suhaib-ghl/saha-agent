@@ -7,6 +7,7 @@ import time
 import unittest
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
+from unittest.mock import patch
 
 from saha_agent import engines
 from saha_agent.events import Unauthorized, normalize, select_responsibility, signature, verify
@@ -226,6 +227,12 @@ class HTTPTests(unittest.TestCase):
     def test_cross_origin_owner_request_rejected(self):
         self.assertEqual(self.request('/api/control',self.owner,{'action':'resume'},{'Origin':'https://evil.example'})[0],403)
         self.assertTrue(self.rt.store.paused())
+
+    def test_local_cli_never_uses_an_http_proxy(self):
+        from saha_agent.__main__ import request
+        with patch('urllib.request.getproxies',return_value={'http':'http://127.0.0.1:1'}):
+            result=request(self.rt.root,{'port':self.server.server_port},'/api/status')
+        self.assertTrue(result['paused'])
 
     def test_artifact_requires_owner_and_blocks_escape(self):
         tid='a'*32

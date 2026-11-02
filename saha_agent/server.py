@@ -1,4 +1,5 @@
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from socketserver import TCPServer
 import json
 import os
 from pathlib import Path
@@ -11,6 +12,15 @@ from .store import Conflict
 
 WEB = Path(__file__).resolve().parent / 'web'
 MAX_BODY = 256_000
+
+
+class LoopbackServer(ThreadingHTTPServer):
+    def server_bind(self):
+        # HTTPServer normally reverse-resolves its address for server_name.
+        # This loopback-only service needs no DNS to start or serve requests.
+        TCPServer.server_bind(self)
+        self.server_name = 'localhost'
+        self.server_port = self.server_address[1]
 
 
 def private_key(path):
@@ -169,4 +179,4 @@ def make_server(runtime, port, source_secrets=None):
             except Exception:
                 self.reply(500, {'error': 'Request failed; no acknowledgement of durable ingestion'})
 
-    return ThreadingHTTPServer(('127.0.0.1', port), Handler)
+    return LoopbackServer(('127.0.0.1', port), Handler)

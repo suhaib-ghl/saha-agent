@@ -8,7 +8,7 @@ import sys
 import tempfile
 import time
 from urllib.error import URLError
-from urllib.request import Request, urlopen
+from urllib.request import Request, ProxyHandler, build_opener
 
 
 def main():
@@ -28,12 +28,13 @@ def main():
             sock.bind(('127.0.0.1',0));data['port']=sock.getsockname()[1]
         config.write_text(json.dumps(data))
         base='http://127.0.0.1:'+str(data['port'])
+        local=build_opener(ProxyHandler({}))
         state=work/'profile/state'
         def api(route,body=None):
             token=(state/'owner.key').read_text().strip()
             req=Request(base+route,data=json.dumps(body).encode() if body is not None else None,
                         headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'})
-            with urlopen(req,timeout=2) as response:return json.load(response)
+            with local.open(req,timeout=2) as response:return json.load(response)
         def wait(fn):
             end=time.monotonic()+15
             last_error=None
@@ -47,11 +48,12 @@ def main():
                 time.sleep(.05)
             raise AssertionError('Installed runtime did not reach expected state. Last request error: '+str(last_error)+'; server log: '+(work/'service.log').read_text())
         with (work/'service.log').open('w') as log:
-            proc=subprocess.Popen([python,'-I','-m','saha_agent','serve'],cwd=work,env=env,stdout=log,stderr=log)
+            diagnostic='import faulthandler; faulthandler.dump_traceback_later(10); from saha_agent.__main__ import main; main()'
+            proc=subprocess.Popen([python,'-I','-c',diagnostic,'serve'],cwd=work,env=env,stdout=log,stderr=log)
             try:
                 wait(lambda:api('/api/status'))
-                with urlopen(base,timeout=2) as response:assert b'Saha' in response.read()
-                with urlopen(base+'/app.js',timeout=2) as response:assert b'tool-decision' in response.read()
+                with local.open(base,timeout=2) as response:assert b'Saha' in response.read()
+                with local.open(base+'/app.js',timeout=2) as response:assert b'tool-decision' in response.read()
                 job=json.loads(cli('submit','Synthetic install smoke test','--engine','demo'))['task_id']
                 approval=wait(lambda:api('/api/status')['approvals'])[0]
                 cli('decide',approval['id'],'approve','--note','Write the synthetic local demo note')

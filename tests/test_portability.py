@@ -11,6 +11,8 @@ from unittest.mock import Mock, patch
 from saha_agent import paths
 from saha_agent.__main__ import configuration
 from saha_agent.connections import Connections
+from saha_agent.runtime import Runtime
+from saha_agent.server import make_server
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -63,6 +65,14 @@ class PortabilityTests(unittest.TestCase):
     def test_packaged_and_repository_defaults_match(self):
         self.assertEqual(json.loads((ROOT/'config.example.json').read_text()),
                          json.loads((ROOT/'saha_agent/defaults/config.example.json').read_text()))
+
+    def test_local_server_starts_without_dns(self):
+        config=json.loads((ROOT/'config.example.json').read_text())
+        runtime=Runtime(self.root/'state',config)
+        with patch('socket.getfqdn',side_effect=AssertionError('DNS is unavailable')):
+            server=make_server(runtime,0)
+            self.assertEqual(server.server_name,'localhost')
+            server.server_close()
 
     def test_enabled_integrations_require_explicit_identity_and_scope(self):
         c=json.loads((ROOT/'config.example.json').read_text())

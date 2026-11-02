@@ -5,7 +5,7 @@ synthetic data; private pilot receipts and conversations are not distributed.
 
 ## Portable core
 
-- **62 Python tests passed locally** on macOS with Python 3.14.6.
+- **64 Python tests passed locally** on macOS with Python 3.14.6.
 - Python compilation and JavaScript syntax checks passed.
 - Built a wheel and installed it into a fresh venv. Ran from a temporary directory
   outside the checkout with Python isolated mode and a fresh `SAHA_HOME`.
@@ -19,7 +19,7 @@ synthetic data; private pilot receipts and conversations are not distributed.
   another machine.
 - Tests cover profile isolation, non-overwriting initialization, matching packaged
   defaults, explicit identity/scopes, token-file selection, no implicit credential
-  scan, and release exclusion of private state, screenshots and configuration.
+  scan, loopback startup without DNS, local CLI requests without HTTP proxies, and release exclusion of private state, screenshots and configuration.
 - Existing tests cover duplicate events, signed ingress, sender/assignment filtering,
   stale completion rejection, task and live-tool approvals, expiry/replay/origin
   checks, cancellation, process timeout, runtime exclusivity and bounded team repair.
