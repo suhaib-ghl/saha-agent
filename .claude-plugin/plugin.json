@@ -1,0 +1,8 @@
+{
+  "name": "saha-agent",
+  "version": "0.2.0",
+  "description": "Saha local runtime skills, read-only MCP inspection and session status hook.",
+  "author": {
+    "name": "Saha contributors"
+  }
+}

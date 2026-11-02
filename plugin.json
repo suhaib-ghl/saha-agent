@@ -1,0 +1,18 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "saha-agent",
+  "version": "0.2.0",
+  "description": "Inspect and operate Saha's local event-driven work runtime with portable skills and a read-only MCP server.",
+  "author": {
+    "name": "Saha contributors"
+  },
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Saha",
+        "shortDescription": "Your local work agent",
+        "capabilities": []
+      }
+    }
+  }
+}

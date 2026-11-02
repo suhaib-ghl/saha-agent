@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "saha-agent"
+version = "0.2.0"
+description = "A local work queue with bounded AI workers, durable decisions and execution receipts"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "Saha contributors"}]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX :: Linux",
+]
+
+[project.optional-dependencies]
+slack = ["slack-sdk>=3.27,<4"]
+
+[project.scripts]
+saha = "saha_agent.__main__:main"
+saha-mcp = "saha_agent.mcp:main"
+saha-session-status = "saha_agent.session_status:main"
+
+[project.urls]
+Repository = "https://github.com/suhaib-ghl/saha-agent"
+Issues = "https://github.com/suhaib-ghl/saha-agent/issues"
+
+[tool.setuptools.packages.find]
+include = ["saha_agent*"]
+
+[tool.setuptools.package-data]
+saha_agent = ["web/*", "defaults/*.json", "_entrypoints/*.py"]

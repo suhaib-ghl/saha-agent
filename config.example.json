@@ -1,0 +1,60 @@
+{
+  "port": 7331,
+  "engine": "demo",
+  "timeout_seconds": 600,
+  "max_attempts": 3,
+  "max_runs_per_day": 20,
+  "claude_budget_usd": 2.0,
+  "responsibilities": [
+    {
+      "id": "local-work",
+      "source": "local",
+      "enabled": true,
+      "instructions": "Investigate the supplied request. Create a useful local deliverable in the assigned workspace. Verify what you can and clearly state limitations. Ask only for material missing decisions. Do not send messages or perform external writes."
+    },
+    {
+      "id": "slack-triage",
+      "source": "slack",
+      "enabled": false,
+      "channels": [],
+      "senders": [],
+      "instructions": "Triage the work request, identify missing evidence, and prepare a local investigation or reply draft. Do not send replies or change account settings."
+    },
+    {
+      "id": "assigned-bugs",
+      "source": "clickup",
+      "enabled": false,
+      "assignee_id": "",
+      "instructions": "Investigate an assigned task using supplied evidence. Prepare a local design or patch. Do not mark the source ticket complete."
+    },
+    {
+      "id": "pr-follow-through",
+      "source": "github",
+      "enabled": false,
+      "repositories": [],
+      "instructions": "Assess the supplied PR or CI change and prepare a local follow-up. Verify the current head before proposing edits. Do not merge, deploy, post comments or push."
+    }
+  ],
+  "integrations": {
+    "github": {
+      "enabled": false,
+      "login": "",
+      "pull_requests": []
+    },
+    "clickup": {
+      "enabled": false,
+      "workspace_id": "",
+      "user_id": "",
+      "token_file": ""
+    },
+    "slack": {
+      "enabled": false,
+      "team_id": "",
+      "credentials_file": ""
+    },
+    "computer": {
+      "enabled": false,
+      "manifest": ""
+    }
+  }
+}
