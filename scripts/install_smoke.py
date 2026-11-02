@@ -36,13 +36,16 @@ def main():
             with urlopen(req,timeout=2) as response:return json.load(response)
         def wait(fn):
             end=time.monotonic()+15
+            last_error=None
             while time.monotonic()<end:
+                if proc.poll() is not None:
+                    raise AssertionError('Installed server exited: '+(work/'service.log').read_text())
                 try:
                     result=fn()
                     if result:return result
-                except (URLError,OSError):pass
+                except (URLError,OSError) as exc:last_error=repr(exc)
                 time.sleep(.05)
-            raise AssertionError('Installed runtime did not reach expected state')
+            raise AssertionError('Installed runtime did not reach expected state. Last request error: '+str(last_error)+'; server log: '+(work/'service.log').read_text())
         with (work/'service.log').open('w') as log:
             proc=subprocess.Popen([python,'-I','-m','saha_agent','serve'],cwd=work,env=env,stdout=log,stderr=log)
             try:
